@@ -1,0 +1,24 @@
+/terraform
+  /modules
+    /networking
+      main.tf
+      variables.tf
+      outputs.tf
+    /presentation
+      main.tf
+      variables.tf
+      outputs.tf
+    /application
+      main.tf
+      variables.tf
+      outputs.tf
+    /database
+      main.tf
+      variables.tf
+      outputs.tf
+  /environments
+    /dev
+      variables.tf
+    /prod
+      variables.tf
+	main.tf
