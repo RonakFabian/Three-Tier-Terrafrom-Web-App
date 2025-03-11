@@ -7,7 +7,7 @@ resource "aws_launch_template" "web_server" {
 
   network_interfaces {
     associate_public_ip_address = true
-    security_groups             = [aws_security_group.web_sg.id]
+
   }
 
   tag_specifications {
@@ -18,9 +18,8 @@ resource "aws_launch_template" "web_server" {
   }
 }
 
-
 resource "aws_autoscaling_group" "web_asg" {
-  vpc_zone_identifier = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]
+  vpc_zone_identifier = [var.subnet_id_1, var.subnet_id_2]
   desired_capacity    = 2
   min_size            = 2
   max_size            = 4
@@ -37,12 +36,18 @@ resource "aws_lb" "web_alb" {
   security_groups    = [aws_security_group.web_sg.id]
   subnets            = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]
 }
+data "aws_vpc" "main" {
+  filter {
+    name   = "tag:Name"
+    values = ["main-vpc"] # Change this to your VPC's name
+  }
+}
 
 resource "aws_lb_target_group" "web_tg" {
   name     = "web-tg"
   port     = 80
   protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
+  vpc_id   = data.aws_vpc.main.id
 }
 
 resource "aws_lb_listener" "web_listener" {
