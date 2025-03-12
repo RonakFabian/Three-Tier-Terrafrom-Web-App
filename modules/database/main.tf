@@ -24,7 +24,7 @@ resource "aws_db_instance" "read_replica" {
 
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name       = "rds-subnet-group"
-  subnet_ids = [aws_subnet.rds_subnet_1.id, aws_subnet.rds_subnet_2.id]
+  subnet_ids = [var.rds_subnet_1, var.rds_subnet_2]
   tags = {
     Name = "rds-subnet-group"
   }

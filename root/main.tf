@@ -18,21 +18,26 @@ module "networking" {
 # an Application Load Balancer (ALB) to distribute traffic,
 # and a CloudFront distribution for global content delivery. 
 module "client" {
-  source      = "../modules/client"
-  subnet_id_1 = module.networking.public_subnet_1_id
-  subnet_id_2 = module.networking.public_subnet_2_id
+  source          = "../modules/client"
+  public_subnet_1 = module.networking.public_subnet_1_id
+  public_subnet_2 = module.networking.public_subnet_2_id
+
 
 }
 
 #Create an Auto Scaling Group (ASG) with two EC2 instances in the private subnets,
 # an Application Load Balancer (ALB) to distribute traffic.
 module "server" {
-  source = "../modules/server"
+  source           = "../modules/server"
+  private_subnet_1 = module.networking.private_subnet_1_id
+  private_subnet_2 = module.networking.private_subnet_2_id
 
 }
 
 #Create an RDS primary instance in one private subnet and a read replica in another
 module "database" {
-  source = "../modules/database"
+  source       = "../modules/database"
+  rds_subnet_1 = module.networking.private_subnet_rds_1_id
+  rds_subnet_2 = module.networking.private_subnet_rds_2_id
 }
 

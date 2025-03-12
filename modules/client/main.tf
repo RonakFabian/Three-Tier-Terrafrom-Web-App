@@ -33,13 +33,13 @@ resource "aws_lb" "web_alb" {
   name               = "web-alb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.web_sg.id]
-  subnets            = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]
+
+  subnets = [var.public_subnet_1, var.public_subnet_2]
 }
 data "aws_vpc" "main" {
   filter {
     name   = "tag:Name"
-    values = ["main-vpc"] # Change this to your VPC's name
+    values = ["main-vpc"]
   }
 }
 
@@ -58,6 +58,11 @@ resource "aws_lb_listener" "web_listener" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.web_tg.arn
   }
+}
+data "aws_acm_certificate" "cert" {
+  domain      = "example.com"
+  statuses    = ["ISSUED"]
+  most_recent = true
 }
 
 resource "aws_cloudfront_distribution" "web_cf" {
@@ -80,7 +85,7 @@ resource "aws_cloudfront_distribution" "web_cf" {
   }
 
   viewer_certificate {
-    acm_certificate_arn      = data.aws_acm_certificate.issued.arn
+    acm_certificate_arn      = data.aws_acm_certificate.cert.arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2018"
   }

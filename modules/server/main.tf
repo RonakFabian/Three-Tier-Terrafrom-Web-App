@@ -7,7 +7,6 @@ resource "aws_launch_template" "web_server" {
 
   network_interfaces {
     associate_public_ip_address = true
-    security_groups             = [aws_security_group.web_sg.id]
   }
 
   tag_specifications {
@@ -16,13 +15,11 @@ resource "aws_launch_template" "web_server" {
       Name = "application-server"
     }
   }
-  network_interfaces {
-    security_groups = [aws_security_group.server_sg.id]
-  }
+
 }
 
 resource "aws_autoscaling_group" "server_asg" {
-  vpc_zone_identifier = [aws_subnet.private_subnet_1.id, aws_subnet.private_subnet_2.id]
+  vpc_zone_identifier = [var.private_subnet_1, var.private_subnet_2]
   desired_capacity    = 2
   min_size            = 2
   max_size            = 4
@@ -36,8 +33,7 @@ resource "aws_lb" "server_alb" {
   name               = "server-alb"
   internal           = true
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.server_sg.id]
-  subnets            = [aws_subnet.private_subnet_1.id, aws_subnet.private_subnet_2.id]
+  subnets            = [var.private_subnet_1, var.private_subnet_2]
 }
 data "aws_vpc" "main" {
   filter {
